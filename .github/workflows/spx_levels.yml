@@ -34,12 +34,13 @@ jobs:
         POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
       run: python spx_atr_calculator.py
       
-    - name: Commit and push data file
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add spy_levels_data.json
-        git diff --staged --quiet || git commit -m "Update SPX levels - $(date)"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    name: Commit and push data file
+  run: |
+    git config --local user.email "action@github.com"
+    git config --local user.name "GitHub Action"
+    git pull origin main
+    git add spy_levels_data.json
+    git diff --staged --quiet || git commit -m "Update SPY levels - $(date)"
+    git push origin main
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
