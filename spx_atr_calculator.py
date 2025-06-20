@@ -40,10 +40,12 @@ class SPYLevelsCalculator:
             
             # Print raw response for debugging
             print(f"API Response Status Code: {response.status_code}")
-            print(f"API Response: {data}")
+            print(f"API Response Status: {data.get('status', 'No status')}")
+            print(f"Result count: {data.get('resultsCount', 0)}")
             
-            if data.get('status') != 'OK':
-                error_msg = data.get('error', data.get('message', 'Unknown error'))
+            # Accept both 'OK' and 'DELAYED' status (DELAYED is normal for free tier)
+            if data.get('status') not in ['OK', 'DELAYED']:
+                error_msg = data.get('error', data.get('message', f"Unexpected status: {data.get('status')}"))
                 raise Exception(f"API Error: {error_msg}")
             
             # Convert Polygon format to our expected format
