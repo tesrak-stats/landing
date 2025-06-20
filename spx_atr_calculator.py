@@ -109,10 +109,11 @@ class SPYLevelsCalculator:
         df = pd.DataFrame(df_data)
         df = df.sort_values('timestamp')
         
-        # Filter for market hours (9:00 AM - 4:00 PM ET)
+        # Filter for regular market hours only (9:30 AM - 4:00 PM ET)
+        # This excludes pre-market and after-hours data
         df = df[
-            (df['timestamp'].dt.hour >= 9) & 
-            (df['timestamp'].dt.hour < 16)
+            ((df['timestamp'].dt.hour == 9) & (df['timestamp'].dt.minute >= 30)) |
+            ((df['timestamp'].dt.hour >= 10) & (df['timestamp'].dt.hour < 16))
         ]
         
         # Create 4-hour blocks
@@ -122,20 +123,20 @@ class SPYLevelsCalculator:
         for date, day_data in df.groupby(df['timestamp'].dt.date):
             day_data = day_data.sort_values('timestamp')
             
-            # Morning block: 9:00 AM - 1:00 PM ET (9:00-13:00)
+            # Morning block: 9:30 AM - 1:00 PM ET (9:30-13:00)
             morning = day_data[
-                (day_data['timestamp'].dt.hour >= 9) & 
-                (day_data['timestamp'].dt.hour < 13)
+                ((day_data['timestamp'].dt.hour == 9) & (day_data['timestamp'].dt.minute >= 30)) |
+                ((day_data['timestamp'].dt.hour >= 10) & (day_data['timestamp'].dt.hour < 13))
             ]
             
-            # Afternoon block: 1:00 PM - close (13:00-16:00)
+            # Afternoon block: 1:00 PM - 4:00 PM ET (13:00-16:00)
             afternoon = day_data[
-                (day_data['timestamp'].dt.hour >= 13)
+                (day_data['timestamp'].dt.hour >= 13) & (day_data['timestamp'].dt.hour < 16)
             ]
             
             # Create candles for each block
             blocks = [
-                ('morning', morning, f"{date} 09:00-13:00"),
+                ('morning', morning, f"{date} 09:30-13:00"),
                 ('afternoon', afternoon, f"{date} 13:00-16:00")
             ]
             
