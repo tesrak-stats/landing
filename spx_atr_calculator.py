@@ -6,8 +6,8 @@ import pytz
 import os
 import numpy as np
 
-class SPXLevelsCalculator:
-    def __init__(self, api_key, data_file='spx_levels_data.json'):
+class SPYLevelsCalculator:
+    def __init__(self, api_key, data_file='spy_levels_data.json'):
         self.api_key = api_key
         self.data_file = data_file
         self.et_tz = pytz.timezone('US/Eastern')
@@ -16,7 +16,7 @@ class SPXLevelsCalculator:
         self.fib_ratios = [1.0, 0.786, 0.618, 0.5, 0.382, 0.236, 0.0]
         
     def fetch_intraday_data(self):
-        """Fetch intraday SPX data from Polygon.io"""
+        """Fetch intraday SPY data from Polygon.io (SPY tracks SPX closely)"""
         # Get date range for last 20 days (to ensure we have enough 4H periods)
         end_date = datetime.now(self.et_tz).date()
         start_date = end_date - timedelta(days=20)
@@ -25,8 +25,8 @@ class SPXLevelsCalculator:
         start_str = start_date.strftime('%Y-%m-%d')
         end_str = end_date.strftime('%Y-%m-%d')
         
-        # Polygon.io aggregates endpoint for SPX index
-        url = f"https://api.polygon.io/v2/aggs/ticker/I:SPX/range/5/minute/{start_str}/{end_str}"
+        # Polygon.io aggregates endpoint for SPY ETF (tracks SPX)
+        url = f"https://api.polygon.io/v2/aggs/ticker/SPY/range/5/minute/{start_str}/{end_str}"
         params = {
             'apikey': self.api_key,
             'adjusted': 'true',
@@ -312,7 +312,7 @@ class SPXLevelsCalculator:
         self.save_data(stored_data)
         
         # Print results
-        print(f"\n=== {update_type} LEVELS UPDATE ===")
+        print(f"\n=== SPY {update_type} LEVELS UPDATE ===")
         print(f"Prior 4H Close ({target_period}): {prior_4h_close:.2f}")
         print(f"Current ATR(14): {current_atr:.2f}")
         print(f"\nCalculated Levels:")
@@ -331,7 +331,7 @@ def main():
     if not api_key:
         raise ValueError("POLYGON_API_KEY environment variable not set")
     
-    calculator = SPXLevelsCalculator(api_key)
+    calculator = SPYLevelsCalculator(api_key)
     calculator.update_levels()
 
 if __name__ == "__main__":
