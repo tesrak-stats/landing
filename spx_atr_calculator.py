@@ -145,11 +145,11 @@ class SPYLevelsCalculator:
                         'timestamp': timestamp_label,
                         'date': str(date),
                         'period': block_name,
-                        'open': block_data.iloc[0]['open'],
-                        'high': block_data['high'].max(),
-                        'low': block_data['low'].min(),
-                        'close': block_data.iloc[-1]['close'],
-                        'volume': block_data['volume'].sum()
+                        'open': float(block_data.iloc[0]['open']),
+                        'high': float(block_data['high'].max()),
+                        'low': float(block_data['low'].min()),
+                        'close': float(block_data.iloc[-1]['close']),
+                        'volume': int(block_data['volume'].sum())
                     }
                     four_hour_candles.append(candle)
         
@@ -179,8 +179,8 @@ class SPYLevelsCalculator:
                 'timestamp': current['timestamp'],
                 'date': current['date'],
                 'period': current['period'],
-                'true_range': true_range,
-                'close': current['close']
+                'true_range': float(true_range),
+                'close': float(current['close'])
             })
         
         return tr_values
@@ -214,8 +214,8 @@ class SPYLevelsCalculator:
                 'timestamp': tr_values[i]['timestamp'],
                 'date': tr_values[i]['date'],
                 'period': tr_values[i]['period'],
-                'atr': new_atr,
-                'close': tr_values[i]['close']
+                'atr': float(new_atr),
+                'close': float(tr_values[i]['close'])
             })
         
         return atr_values
@@ -314,9 +314,9 @@ class SPYLevelsCalculator:
         stored_data['current_levels'] = {
             'update_type': update_type,
             'timestamp': datetime.now(self.et_tz).isoformat(),
-            'prior_4h_close': prior_4h_close,
-            'current_atr': current_atr,
-            'levels': new_levels
+            'prior_4h_close': float(prior_4h_close),
+            'current_atr': float(current_atr),
+            'levels': {k: float(v) for k, v in new_levels.items()}
         }
         
         # Save data
