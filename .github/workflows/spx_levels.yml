@@ -1,0 +1,45 @@
+# .github/workflows/spx_levels.yml
+name: SPX Levels Calculator
+
+on:
+  schedule:
+    # Run at 1:00 PM ET (6:00 PM UTC) - adjust for daylight saving time
+    - cron: '0 18 * * 1-5'  # 1 PM ET during EST
+    # Run at 4:00 PM ET (9:00 PM UTC) - after market close
+    - cron: '0 21 * * 1-5'  # 4 PM ET during EST
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  calculate-levels:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests pandas pytz numpy
+        
+    - name: Run Levels Calculator
+      env:
+        POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+      run: python spx_levels_calculator.py
+      
+    - name: Commit and push data file
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add spx_levels_data.json
+        git diff --staged --quiet || git commit -m "Update SPX levels - $(date)"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
