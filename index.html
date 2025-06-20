@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPY Levels - Live Trading Levels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        .status-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .levels-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .levels-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .level-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .level-item:last-child {
+            border-bottom: none;
+        }
+
+        .level-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .level-name {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .level-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .resistance-levels .level-item {
+            color: #ff6b6b;
+        }
+
+        .support-levels .level-item {
+            color: #51cf66;
+        }
+
+        .current-price {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .update-info {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.2rem;
+            color: #a0a0a0;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .status-info {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .levels-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">SPY Levels</h1>
+            <p class="subtitle">Live ATR-Based Trading Levels for S&P 500 ETF</p>
+        </div>
+
+        <div id="loading" class="loading pulse">
+            Loading latest levels...
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="status-info">
+                <div class="info-card">
+                    <div class="info-label">Prior 4H Close</div>
+                    <div class="info-value" id="prior-close">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">ATR(14)</div>
+                    <div class="info-value" id="atr-value">--</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Update Type</div>
+                    <div class="info-value" id="update-type">--</div>
+                </div>
+            </div>
+
+            <div class="levels-container">
+                <div class="levels-section resistance-levels">
+                    <h2 class="section-title">🔴 Resistance Levels</h2>
+                    <div id="resistance-levels"></div>
+                </div>
+
+                <div class="levels-section support-levels">
+                    <h2 class="section-title">🟢 Support Levels</h2>
+                    <div id="support-levels"></div>
+                </div>
+            </div>
+
+            <div class="current-price">
+                <div id="current-level">Prior 4H Close: <span id="current-price-value">--</span></div>
+            </div>
+
+            <div class="update-info">
+                <div>Last Updated: <span id="last-update">--</span></div>
+                <div style="margin-top: 10px; font-size: 0.9rem; color: #a0a0a0;">
+                    Updates automatically at 1:00 PM & 4:00 PM ET on weekdays
+                </div>
+            </div>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <h3>Unable to load levels data</h3>
+            <p>Please check back in a few minutes. Data updates at 1:00 PM and 4:00 PM ET on weekdays.</p>
+        </div>
+    </div>
+
+    <script>
+        async function loadLevelsData() {
+            try {
+                // Replace with your actual GitHub raw file URL
+                const response = await fetch('https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO_NAME/main/spy_levels_data.json');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                
+                const data = await response.json();
+                displayLevels(data);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function displayLevels(data) {
+            const levelsData = data.current_levels;
+            
+            // Update status info
+            document.getElementById('prior-close').textContent = levelsData.prior_4h_close.toFixed(2);
+            document.getElementById('atr-value').textContent = levelsData.current_atr.toFixed(2);
+            document.getElementById('update-type').textContent = levelsData.update_type.replace('_', ' ');
+            document.getElementById('current-price-value').textContent = levelsData.prior_4h_close.toFixed(2);
+            
+            // Format timestamp
+            const updateTime = new Date(levelsData.timestamp).toLocaleString('en-US', {
+                timeZone: 'America/New_York',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
+            document.getElementById('last-update').textContent = updateTime;
+            
+            // Sort levels
+            const levels = levelsData.levels;
+            const sortedLevels = Object.entries(levels).sort((a, b) => b[1] - a[1]);
+            
+            // Separate resistance (above current) and support (below current)
+            const currentPrice = levelsData.prior_4h_close;
+            const resistanceLevels = sortedLevels.filter(([name, value]) => value > currentPrice);
+            const supportLevels = sortedLevels.filter(([name, value]) => value <= currentPrice);
+            
+            // Display resistance levels
+            const resistanceContainer = document.getElementById('resistance-levels');
+            resistanceContainer.innerHTML = '';
+            resistanceLevels.forEach(([name, value]) => {
+                const div = document.createElement('div');
+                div.className = 'level-item';
+                div.innerHTML = `
+                    <span class="level-name">${formatLevelName(name)}</span>
+                    <span class="level-value">$${value.toFixed(2)}</span>
+                `;
+                resistanceContainer.appendChild(div);
+            });
+            
+            // Display support levels
+            const supportContainer = document.getElementById('support-levels');
+            supportContainer.innerHTML = '';
+            supportLevels.reverse().forEach(([name, value]) => {
+                const div = document.createElement('div');
+                div.className = 'level-item';
+                div.innerHTML = `
+                    <span class="level-name">${formatLevelName(name)}</span>
+                    <span class="level-value">$${value.toFixed(2)}</span>
+                `;
+                supportContainer.appendChild(div);
+            });
+            
+            // Show content
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        function formatLevelName(name) {
+            if (name === 'Level_0') return 'Current Level';
+            return name.replace('Level_', '').replace('+', '+') + ' ATR';
+        }
+
+        // Load data on page load
+        loadLevelsData();
+        
+        // Refresh data every 5 minutes
+        setInterval(loadLevelsData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
