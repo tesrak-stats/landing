@@ -32,7 +32,7 @@ jobs:
     - name: Run Levels Calculator
       env:
         POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-      run: python spx_levels_calculator.py
+      run: python spx_atr_calculator.py
       
     - name: Commit and push data file
       run: |
