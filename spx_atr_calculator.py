@@ -17,9 +17,9 @@ class SPYLevelsCalculator:
         
     def fetch_intraday_data(self):
         """Fetch intraday SPY data from Polygon.io (SPY tracks SPX closely)"""
-        # Get date range for last 10 days (reduced for free tier)
+        # Get date range for last 15 days (need more to ensure 14+ four-hour periods)
         end_date = datetime.now(self.et_tz).date()
-        start_date = end_date - timedelta(days=10)
+        start_date = end_date - timedelta(days=15)
         
         # Format dates for Polygon API (YYYY-MM-DD)
         start_str = start_date.strftime('%Y-%m-%d')
