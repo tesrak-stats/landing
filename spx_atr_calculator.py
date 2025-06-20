@@ -17,9 +17,9 @@ class SPYLevelsCalculator:
         
     def fetch_intraday_data(self):
         """Fetch intraday SPY data from Polygon.io (SPY tracks SPX closely)"""
-        # Get date range for last 20 days (to ensure we have enough 4H periods)
+        # Get date range for last 10 days (reduced for free tier)
         end_date = datetime.now(self.et_tz).date()
-        start_date = end_date - timedelta(days=20)
+        start_date = end_date - timedelta(days=10)
         
         # Format dates for Polygon API (YYYY-MM-DD)
         start_str = start_date.strftime('%Y-%m-%d')
@@ -38,12 +38,17 @@ class SPYLevelsCalculator:
             response = requests.get(url, params=params)
             data = response.json()
             
+            # Print raw response for debugging
+            print(f"API Response Status Code: {response.status_code}")
+            print(f"API Response: {data}")
+            
             if data.get('status') != 'OK':
-                raise Exception(f"API Error: {data.get('error', 'Unknown error')}")
+                error_msg = data.get('error', data.get('message', 'Unknown error'))
+                raise Exception(f"API Error: {error_msg}")
             
             # Convert Polygon format to our expected format
             polygon_data = {}
-            if 'results' in data:
+            if 'results' in data and data['results']:
                 for bar in data['results']:
                     # Convert timestamp from milliseconds to datetime
                     dt = datetime.fromtimestamp(bar['t'] / 1000, tz=self.et_tz)
@@ -56,6 +61,10 @@ class SPYLevelsCalculator:
                         'close': float(bar['c']),
                         'volume': int(bar['v'])
                     }
+                
+                print(f"Successfully fetched {len(polygon_data)} data points")
+            else:
+                print("No results in API response")
             
             return polygon_data
         
