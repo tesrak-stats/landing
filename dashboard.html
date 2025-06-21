@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Hub | ATR Tools</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem;
+      background: #f0f0f0;
+      color: #222;
+    }
+    nav a {
+      margin-right: 1.5rem;
+      text-decoration: none;
+      color: #0074D9;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .card p {
+      flex-grow: 1;
+      color: #444;
+    }
+    .card a {
+      margin-top: 1rem;
+      text-align: center;
+      padding: 0.5rem;
+      background-color: #0074D9;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .tag {
+      display: inline-block;
+      background: #ccc;
+      color: #333;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/landing/landing.html">Home</a>
+    <a href="/landing/dashboard.html">Dashboard Hub</a>
+    <a href="/landing/methodology.html">Methodology</a>
+    <a href="/landing/requests.html">Requests</a>
+    <a href="/landing/credits.html">Credits</a>
+  </nav>
+
+  <h1>Dashboard Hub</h1>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Live</span>
+      <h2>SPX ATR Roadmap</h2>
+      <p>Explore probabilities of ATR level completions based on 10 years of SPX data.</p>
+      <a href="https://your-streamlit-app-url" target="_blank">Open Dashboard</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Coming Soon</span>
+      <h2>TSLA ATR Tracker</h2>
+      <p>Similar analysis on Tesla stock using its own intraday and daily ATR data.</p>
+      <a href="#">Coming Q3</a>
+    </div>
+
+    <div class="card">
+      <span class="tag">Planned</span>
+      <h2>Crypto/Futures ATR</h2>
+      <p>ATR logic applied to BTC, ETH, ES and NQ futures, including retracement stats.</p>
+      <a href="#">Planned</a>
+    </div>
+  </div>
+</body>
+</html>
