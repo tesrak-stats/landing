@@ -416,8 +416,8 @@
     }
   ],
   "current_levels": {
-    "update_type": "1PM_update",
-    "timestamp": "2025-12-01T13:43:19.654007-05:00",
+    "update_type": "4PM_update",
+    "timestamp": "2025-12-01T16:15:04.498669-05:00",
     "prior_4h_close": 683.39,
     "current_atr": 6.170357435015968,
     "levels": {
